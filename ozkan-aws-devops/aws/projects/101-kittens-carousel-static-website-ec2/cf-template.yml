@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Sample template to provision an EC2 Instance with public IP. Create a Security Group and associate with this EC2. and a user-data to install the Apache HTTP server.
+Resources:
+  WebEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: 
+      InstanceType: t2.micro
+      KeyName: 
+      SecurityGroups:
+        - 
+      UserData: 
+        Fn::Base64: |
+          #!/bin/bash -xe
+          yum update -y # good practice to update existing packages
+          yum install -y httpd # install web server 
+          systemctl start httpd
+          systemctl enable httpd
+          # sanırım buraya yazmam gerekiyor curl komutunu
+      Tags:
+        - Key: Name
+          Value: ApacheWebEC2
+Outputs:
+  InstanceId:
+    Description: InstanceId of the first EC2 instance
+    Value: !Ref WebEC2Instance
+  PublicDNS:
+    Description: Public DNS Name of the EC2 instance
+    Value: !GetAtt 
+      - WebEC2Instance
+      - PublicDnsName
+  PublicIP:
+    Description: Public IP address of the EC2 instance
+    Value: !GetAtt 
+      - WebEC2Instance
+      - PublicIp
