@@ -30,7 +30,7 @@ Resources:
       ImageId: ami-0c94855ba95c71c99
       InstanceType: t2.micro
       KeyName: !Ref KeyPairName
-      SecurityGroupIds:
+      SecurityGroupIds: sg-0e6ac13ae90a252bf
         - !Ref WebServerSecurityGroup
       Tags:                
         -                        
