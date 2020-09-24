@@ -17,7 +17,7 @@ def roman(number):
 
 @app.route('/', methods=['GET'])
 def main_page():
-    return render_template('index.html', developer_name= 'Ozkan', not_valid = False )
+    return render_template('index.html', developer_name= 'E2105-Ozkan', not_valid = False )
 
 
 @app.route("/", methods = ["GET", "POST"])
@@ -25,13 +25,12 @@ def head():
     sayi = request.form['number']
     
     if not sayi.isdecimal():
-        return render_template('index.html', developer_name ='Ozkan', not_valid = True)
+        return render_template('index.html', developer_name ='E2105-Ozkan', not_valid = True)
     sayi = int(sayi)
     if not 0 < sayi< 4000 :
-        return render_template('index.html', developer_name ='Ozkan', not_valid = True)
+        return render_template('index.html', developer_name ='E2105-Ozkan', not_valid = True)
     
     return render_template("result.html", number_decimal = sayi, number_roman = roman(sayi) , developer_name="E2105-Ozkan")
-    #return render_template("index.html", developer_name="E2105-Ozkan")
 
 if __name__ == "__main__":
     #app.run(debug = True)
