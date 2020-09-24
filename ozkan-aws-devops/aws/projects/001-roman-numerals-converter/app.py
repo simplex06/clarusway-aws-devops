@@ -17,7 +17,7 @@ def head():
                     roman_num += romans[x]
                     number -= integer[x]
                 x += 1
-        return render_template("result.html", number = num, developer_name="E2105-Ozkan")
+        return render_template("result.html", number = num, developer_name="E2105-Ozkan", not_valid = False)
     else:
         return render_template("index.html", developer_name="E2105-Ozkan", not_valid = True)
     #return render_template("index.html", developer_name="E2105-Ozkan")
