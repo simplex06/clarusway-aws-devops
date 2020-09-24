@@ -41,12 +41,14 @@ Resources:
           !Sub |
             #! /bin/bash
             yum update -y
-            sudo yum install python3 -y
-            sudo pip3 install flask
+            yum install python3 -y
+            pip3 install flask
             cd /home/ec2-user/
-            wget -P templates https://raw.githubusercontent.com/simplex06/clarusway-aws-devops/master/ozkan-aws-devops/aws/projects/001-roman-numerals-converter/templates/index.html
-            wget -P templates https://raw.githubusercontent.com/simplex06/clarusway-aws-devops/master/ozkan-aws-devops/aws/projects/001-roman-numerals-converter/templates/result.html
             wget https://raw.githubusercontent.com/simplex06/clarusway-aws-devops/master/ozkan-aws-devops/aws/projects/001-roman-numerals-converter/app.py
+            mkdir templates
+            cd templates
+            wget https://raw.githubusercontent.com/simplex06/clarusway-aws-devops/master/ozkan-aws-devops/aws/projects/001-roman-numerals-converter/templates/index.html
+            wget https://raw.githubusercontent.com/simplex06/clarusway-aws-devops/master/ozkan-aws-devops/aws/projects/001-roman-numerals-converter/templates/result.html
             cd ..
             python3 app.py
 Outputs:
