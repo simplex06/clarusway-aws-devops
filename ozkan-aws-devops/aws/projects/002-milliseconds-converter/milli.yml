@@ -7,6 +7,13 @@ Description: >
   WebServerASG Auto Scaling Group is using the WebServerLT Launch Template in order to spin up instances needed, 
   and WebServerLT Launch Template is configured to prepare Python Flask environment on EC2,
   and to deploy Milliseconds Converter Application on Flask Server after downloading the app code from Github repository.
+
+Parameters:
+  KeyPairName:
+    Description: Enter the name of your Key Pair for SSH connections.
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Must one of the existing EC2 KeyPair
+
 Resources:
   WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -35,9 +42,71 @@ Resources:
   WebServerTG:
    .......... 
   ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties: 
+      DefaultActions: 
+        - Type: forward
+          TargetGroupArn: !Ref ALBTargetGroup
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
    ...........
+
+  ALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties: 
+      HealthCheckIntervalSeconds: 25
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 3
+      VpcId: EKLENECEK
+  AutoscalingCPUPolicy:
+    Type: AWS::AutoScaling::ScalingPolicy
+    Properties: 
+      AutoScalingGroupName: EKLENECEK
+      PolicyType: TargetTrackingScaling
+      TargetTrackingConfiguration: 
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ASGAverageCPUUtilization
+        TargetValue: !Ref EKLENECEK
+
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      SecurityGroups: 
+        - !GetAtt mySecurityGroup.GroupId
+      Subnets: 
+        - EKLENECEK
+
   WebServerASG:
     ..........
+  
+  WebServerHost:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0c94855ba95c71c99
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds: 
+        - !Ref WebServerSecurityGroup
+      Tags:                
+        -                        
+          Key: Name
+          Value: !Sub WebServerSecurityGroup
+      UserData:
+        Fn::Base64: 
+          !Sub |
+            #! /bin/bash
+            yum update -y
+            yum install python3 -y
+            pip3 install flask
+            wget -P templates https://raw.githubusercontent.com/simplex06/clarusway-aws-devops/master/ozkan-aws-devops/aws/projects/001-roman-numerals-converter/templates/index.html
+            wget -P templates https://raw.githubusercontent.com/simplex06/clarusway-aws-devops/master/ozkan-aws-devops/aws/projects/001-roman-numerals-converter/templates/result.html
+            wget https://raw.githubusercontent.com/simplex06/clarusway-aws-devops/master/ozkan-aws-devops/aws/projects/001-roman-numerals-converter/app.py
+            python3 app.py
+
 Outputs:
   WebsiteURL:
     Value: !Sub 

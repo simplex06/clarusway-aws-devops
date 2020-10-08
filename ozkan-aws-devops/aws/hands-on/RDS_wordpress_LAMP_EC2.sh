@@ -1,5 +1,5 @@
 
-2 Ekim 2020 - Cuma---> Wordpress ve RDS (LAMP Stack) Lab
+2 Ekim 2020 - Cuma---> Wordpress and RDS (LAMP Stack) Lab
 
 # 1.Create 2 Sec.Group:
 
@@ -7,6 +7,8 @@
     RDS_database_Sec_Group: Mysql/Aurora 3306 > anywhere (0:/00000)
 
 # 2.Create RDS mysql instance.
+Master username: admin
+Password: 
 
 # 3.Create EC2 that is installed LAMP with user data seen below for Wordpress app.
 
