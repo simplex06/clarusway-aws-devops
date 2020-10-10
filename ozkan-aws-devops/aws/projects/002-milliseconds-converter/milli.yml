@@ -81,6 +81,8 @@ Resources:
         - EKLENECEK
 
   WebServerASG:
+
+  WebServerASG
     ..........
   
   WebServerHost:
