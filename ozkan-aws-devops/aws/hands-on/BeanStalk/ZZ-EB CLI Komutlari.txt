@@ -1,0 +1,16 @@
+ELASTIC BEANSTALK CLI COMMANDS
+1. aws elastic beanstalk CLI kurulumu
+
+sudo apt update && sudo apt upgrade       	# oncelikle linux update ve upgrade edilir
+sudo apt install python3-pip		  	# python3-pip kurulur
+pip3 -V					  	# pip3 versiyon kontrolu
+pip install awsebcli			  	# awsebcli kurulur	
+pip3 install awsebcli			  	# pip olmazsa pip3 ile awsebcli kurulur
+export PATH=~/.local/bin:$PATH		  	# awsebcli kurulumunda path hatasi icin kullanilir	
+eb --version				  	# eb versiyon kontrolu
+uname -a 					# distro bilgisine ulasmak icin
+cat /etc/lsb-release 				# 
+
+ 
+
+aws elasticbeanstalk delete-application --application-name php-v1	: php-v1 adli application'i silmek icin kullanilir
