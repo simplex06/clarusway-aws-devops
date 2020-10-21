@@ -1,0 +1,102 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Cloud Formation Template for Kittens Carousel which is a static website application 
+  deployed on AWS Simple Storage Service (S3), served through Cloudfront and 
+  Route 53 using AWS Cloudformation Service.
+  
+Parameters:
+  DomainName:
+    Type: AWS::Route53::HostedZone::Id
+    Description: The DNS name of an existing Amazon Route 53 hosted zone
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: must be a valid DNS zone name. 
+  KittensDomainName:
+    Type: String
+    Description: The full domain name 
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: must be a valid DNS zone name.
+
+Resources:
+  KittensBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      AccessControl: PublicRead
+      BucketName: !Ref KittenDomainName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+  
+  KittensBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref KittensBucket #required
+      PolicyDocument:
+      Statement:
+        - Sid: PublicReadGetObject
+          Action:
+            - 's3:GetObject'
+          Effect: Allow
+          Resource: 
+            'Fn::Join':
+              - ''
+              - - 'arn:aws:s3:::'
+                - Ref: KittensBucket
+                - /*
+          Principal: '*'
+
+  WebsiteCloudfront:
+    Type: AWS::CloudFront::Distribution
+    DependsOn:
+    - KittensBucket
+    Properties:
+      DistributionConfig:
+        Comment: Cloudfront Distribution pointing to S3 bucket
+        Origins:
+        - DomainName: !Select [2, !Split ["/", !GetAtt KittensBucket.WebsiteURL]]
+          Id: S3Origin
+          CustomOriginConfig:
+            HTTPPort: '80'
+            HTTPSPort: '443'
+            OriginProtocolPolicy: http-only
+        Enabled: true
+        HttpVersion: 'http2'
+        DefaultRootObject: index.html
+        Aliases:
+        - !Ref 'KittensDomainName'
+        DefaultCacheBehavior:
+          AllowedMethods:
+          - GET
+          - HEAD
+          Compress: true
+          TargetOriginId: S3Origin
+          ForwardedValues:
+            QueryString: true
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: redirect-to-https
+        PriceClass: PriceClass_All
+        ViewerCertificate:
+          AcmCertificateArn: !Ref AcmCertificateArn
+          SslSupportMethod: sni-only
+
+  WebsiteDNSName:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: !Join ['', [!Ref 'DomainName', .]]
+      RecordSets:
+      - Name: !Ref 'KittensDomainName'
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z04059673RSUYGXU3SLIF
+          DNSName: !GetAtt [WebsiteCloudfront, DomainName]
+
+Outputs:
+  BucketName:
+    Value: !Ref 'KittensBucket'
+    Description: Name of S3 bucket to hold website content
+  CloudfrontEndpoint:
+    Value: !GetAtt [WebsiteCloudfront, DomainName]
+    Description: Endpoint for Cloudfront distribution
+  FullDomain:
+    Value: !Ref 'KittensDomainName'
+    Description: Kittens DomainName
+  
