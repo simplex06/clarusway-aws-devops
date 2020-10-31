@@ -1,5 +1,4 @@
 from random import randint
-from termcolor import colored, cprint
 
 print("Let's start the game")
 
@@ -48,10 +47,6 @@ while True:
                   
 print(f"\nUser won {user_score} time(s) and computer won {computer_score} time(s)")
 if computer_score == 3:
-    print("\nand the winner is ")
-    winsound.Beep(99, 9999)
-    cprint('\nComputer has won the game!', 'red', attrs=['blink'])
+    print('\nComputer has won the game!')
 else:
-    print("\nand the winner is ")
-    winsound.Beep(99, 9999)
-    cprint('\nUser has won the game!', 'red', attrs=['blink'])   
+    print('\nUser has won the game!')   
