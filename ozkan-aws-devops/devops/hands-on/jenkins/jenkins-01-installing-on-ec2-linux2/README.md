@@ -312,11 +312,15 @@ USER root
 RUN apt-get update && apt-get install python3-pip -y && \
     pip3 install ansible --upgrade
 USER jenkins
-Exectue the following command.
+
+- Exectue the following command. 
+
 docker-compose up -d
-The administrator password can also be taken from Docker logs.
+
+- The administrator password can also be taken from Docker logs.
 docker logs jenkins
-Enter the temporary password to unlock the Jenkins.
+
+- Enter the temporary password to unlock the Jenkins.
 
 - Install suggested plugins.
 
