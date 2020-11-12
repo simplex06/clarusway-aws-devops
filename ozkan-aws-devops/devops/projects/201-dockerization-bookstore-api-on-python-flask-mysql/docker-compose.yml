@@ -1,15 +1,16 @@
 version: "3.7"
 
-service:
+services:
   database:
     image: mysql:5.7
-    environment:
+    environment: 
       MYSQL_ROOT_PASSWORD: P123456p
       MYSQL_DATABASE: bookstore_db
       MYSQL_USER: clarusway
       MYSQL_PASSWORD: Clarusway_1
     networks:
-      - clarusnet    
+      - clarusnet
+  
 
   my-app:
     image: simplex06/bookstore:latest
@@ -18,8 +19,15 @@ service:
       - database
     ports:
       - "80:80"
-    
+    networks:
+      - clarusnet
+
 networks:
   clarusnet:
     driver: bridge
+
+    
+    
+
+
 
