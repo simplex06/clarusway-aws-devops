@@ -161,7 +161,8 @@ sudo yum install git -y
 
 - For Description : `This Job is packaging Java-Tomcat-Sample Project and creates a war file.`
 
-- At `General Tab`, select `Strategy` and for `Days to keep builds` enter `5` and `Max # of builds to keep` enter `1`.
+- At `General Tab`, select `Discard old builds`
+`Strategy` and for `Days to keep builds` enter `5` and `Max # of builds to keep` enter `1`.
 
 - From `Source Code Management` part select `Git`
 
@@ -175,7 +176,7 @@ sudo yum install git -y
 
 - For `Build`, select `Invoke top-level Maven targets`
 
-  - For `Maven Versin`, select the pre-defined maven, `maven-3.6.3` 
+  - For `Maven Version`, select the pre-defined maven, `maven-3.6.3` 
   - For `Goals`, write `clean package`
   - POM: `pom.xml`
 

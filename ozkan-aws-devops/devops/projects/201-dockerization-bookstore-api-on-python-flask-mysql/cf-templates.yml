@@ -28,7 +28,7 @@ Resources:
   DockerMachine:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-09d95fab7fff3776c
+      ImageId: ami-0947d2ba12ee1ff75
       InstanceType: t2.micro
       KeyName: !Ref KeyPairName
       SecurityGroupIds:
@@ -49,14 +49,14 @@ Resources:
           -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
           mkdir -p /home/ec2-user/bookstore-api
-          TOKEN="0566251ac224261b371322bcbff991b60c52f6ce"
-          FOLDER="https://$TOKEN@raw.githubusercontent.com/serdarcw/Deneme-201/master/"
+          TOKEN="62eacb5efcb0adbc91f8ff4844e4668e3c0e88bc"
+          FOLDER="https://$TOKEN@raw.githubusercontent.com/simplex06/clarusway-aws-devops/master/ozkan-aws-devops/devops/projects/201-dockerization-bookstore-api-on-python-flask-mysql/"
           curl -s --create-dirs -o "/home/ec2-user/bookstore-api/bookstore-api.py" -L "$FOLDER"bookstore-api.py
           curl -s --create-dirs -o "/home/ec2-user/bookstore-api/requirements.txt" -L "$FOLDER"requirements.txt
           curl -s --create-dirs -o "/home/ec2-user/bookstore-api/Dockerfile" -L "$FOLDER"Dockerfile
           curl -s --create-dirs -o "/home/ec2-user/bookstore-api/docker-compose.yml" -L "$FOLDER"docker-compose.yml
           cd /home/ec2-user/bookstore-api
-          docker build -t "serdarcw/bookstore:latest" .
+          docker build -t "simplex06/bookstore:latest" .
           docker-compose up -d
 Outputs:
   WebsiteURL:
