@@ -161,8 +161,7 @@ sudo yum install git -y
 
 - For Description : `This Job is packaging Java-Tomcat-Sample Project and creates a war file.`
 
-- At `General Tab`, select `Discard old builds`
-`Strategy` and for `Days to keep builds` enter `5` and `Max # of builds to keep` enter `1`.
+- At `General Tab`, select `Strategy` and for `Days to keep builds` enter `5` and `Max # of builds to keep` enter `1`.
 
 - From `Source Code Management` part select `Git`
 
@@ -176,7 +175,7 @@ sudo yum install git -y
 
 - For `Build`, select `Invoke top-level Maven targets`
 
-  - For `Maven Version`, select the pre-defined maven, `maven-3.6.3` 
+  - For `Maven Versin`, select the pre-defined maven, `maven-3.6.3` 
   - For `Goals`, write `clean package`
   - POM: `pom.xml`
 
@@ -254,7 +253,7 @@ sudo yum install git -y
 -  Go to the `Package-Application`
    -  Select `Configure`
    -  Select the `Post-build Actions` tab
-   -  From `Add post-build action`, `Build othe projects`
+   -  From `Add post-build action`, `Build other projects`
       -  For `Projects to build`, fill in `Deploy-Application-Staging-Environment`
       -  And select `Trigger only if build is stable` option.
    - Go to the `Build Triggers` tab
@@ -508,7 +507,7 @@ pipeline {
 
 - For name, enter `deploy-application-staging-environment-pipeline`
 
-- Athe bottom, `Copy from`, enter `Deploy-Application-Staging-Environment`
+- At the bottom, `Copy from`, enter `Deploy-Application-Staging-Environment`
 
 - Click `OK`, and `Save`
 
@@ -518,12 +517,9 @@ pipeline {
 
 - For name, enter `deploy-application-production-environment-pipeline`
 
-- Athe bottom, `Copy from`, enter `Deploy-Application-Production-Environment`
+- At the bottom, `Copy from`, enter `Deploy-Application-Production-Environment`
 
 - Click `OK`, and `Save`
-
-- Check that `Pipeline script` option is selected.
-
 
 
 - Go to the `deploy-application-staging-environment-pipeline` job
@@ -544,6 +540,28 @@ pipeline {
   - select `Last successful build`
 
 - `Save` the job
+
+- Now, update the `Jenkinsfile` to include last 2 stages. For this purpose, add these 2 stages in `Jenkinsfile` like below:
+
+```text
+        stage('Deploy to Staging Environment'){
+            steps{
+                build job: 'deploy-application-staging-environment-pipeline'
+
+            }
+            
+        }
+        stage('Deploy to Production Environment'){
+            steps{
+                timeout(time:5, unit:'DAYS'){
+                    input message:'Approve PRODUCTION Deployment?'
+                }
+                build job: 'deploy-application-production-environment-pipeline'
+            }
+        }
+```
+
+- Note: You can also use updated `Jenkinsfile2` file instead of updating `Jenkinsfile`.
 
 - Go to the `package-application-code-pipeline` then select `Build Now` and observe the behaviors.
 
