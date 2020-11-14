@@ -1,163 +1,109 @@
-# Hands-on Ansible-08 : Using facts, vars and secrets
+# Hands-on Ansible-03 : Using facts, vars and secrets
 
-Purpose of the this hands-on training is to give students the knowledge of basic Ansible skills.
+Purpose of the this hands-on training is to give students the knowledge of ansible facts gathering and working with secret values.
 
 ## Learning Outcomes
 
 At the end of this hands-on training, students will be able to;
 
-- 
-- 
+- Explain how and what facts gathering and how to use it in the playbook
+- Learn how to deal with secret values with ansible-vault
 
 ## Outline
 
-- Part 1 - 
+- Part 1 - Install Ansible
 
-- Part 2 - 
+- Part 2 - Ansible Facts
 
-- Part 3 - 
+- Part 3 - Working with sensitive data
 
-- Part 4 -  
 
-- Part 5 - 
 
-- Part 6 - 
+## Part 1 - Install Ansible
 
-- Part 7 - 
 
-## Part 1 - Build the Infrastructure
+- Spin-up 3 Amazon Linux 2 instances and name them as:
+    1. control node
+    2. node1 ----> (SSH PORT 22, HTTP PORT 80)
+    3. node2 ----> (SSH PORT 22, HTTP PORT 80)
 
-- Get to the AWS Console and spin-up 3 EC2 Instances with ```Red Hat Enterprise Linux 8``` AMI.
 
-- Configure the security groups as shown below:
-
-    - Controller Node ----> Port 22 SSH
-
-    - Target Node1 -------> Port 22 SSH, Port 3306 MYSQL/Aurora
-
-    - Target Node2 -------> Port 22 SSH, Port 80 HTTP
-
-## Part 2 - Install Ansible on the Controller Node
-
-- Connect to your ```Controller Node```.
-
-- Optionally you can connect to your instances using VS Code.
-
-                    -------------------- OPTIONAL BELOW ----------------------
-
-- You can also use connect to the Controller Node via VS Code's ```Remote SSH``` Extension. 
-
-- Open up your VS Code editor. 
-
-- Click on the ```Extensions``` icon. 
-
-- Write down ```Remote - SSH``` on the search bar. 
-
-- Click on the first option on the list.
-
-- Click on the install button.
-
-- When the extension is installed, restart your editor.
-
-- Click on the green button (```Open a Remote Window``` button) at the most bottom left.
-
-- Hit enter. (```Connect Current Window to Host...```)
-
-- Enter a name for your connection on the input field and click on ```Add New SSH Host``` option.
-
-- Enter your ssh connection command (```ssh -i <YOUR-PEM-FILE> ec2-user@<YOUR SERVER IP>```) on the input field and hit enter.
-
-- Hit enter again.
-
-- Click on the ```connect``` button at the bottom right.
-
-- Click on ```continue``` option.
-
-- Click on the ```Open Folder``` button and then click on the ```Ok``` button.
-
-- Lastly, open up a new terminal on the current window.
-
-                    -------------------- OPTIONAL ABOVE ----------------------
-
-- Run the commands below to install Python3 and Ansible. 
+- Connect to the control node via SSH and run the following commands.
 
 ```bash
-$ sudo yum install -y python3 
+sudo yum update -y
+sudo amazon-linux-extras install ansible2
 ```
 
-```bash
-$ pip3 install --user ansible
-```
+### Confirm Installation
 
-- Check Ansible's installation with the command below.
+- To confirm the successful installation of Ansible, run the following command.
 
 ```bash
 $ ansible --version
 ```
-
-## Part 3 - Pinging the Target Nodes
-
-- Run the command below to transfer your pem key to your Ansible Controller Node.
-
-```bash
-$ scp -i <PATH-TO-PEM-FILE> <PATH-TO-PEM-FILE> ec2-user@<CONTROLLER-NODE-IP>:/home/ec2-user
+Stdout:
 ```
-
-- Make a directory named ```Project``` under the home directory and cd into it.
-
-```bash 
-$ mkdir Project
-$ cd Project
+ansible 2.9.12
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = [u'/home/ec2-user/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python2.7/site-packages/ansible
+  executable location = /usr/bin/ansible
+  python version = 2.7.18 (default, Aug 27 2020, 21:22:52) [GCC 7.3.1 20180712 (Red Hat 7.3.1-9)]
 ```
+- Explain the lines above:
+    1. Version Number of Ansible
+    2. Path for the Ansible Config File
+    3. Modules are searched in this order
+    4. Ansible's Python Module path
+    5. Ansible's executable file path
+    6. Ansible's Python version with GNU Compiler Collection for Red Hat
 
-- Create a file named ```inventory.txt``` with the command below.
+### Configure Ansible on the Control Node
 
-```bash
-$ vi inventory.txt
-```
+- Connect to the control node for building a basic inventory.
 
-- Paste the content below into the inventory.txt file.
+- Edit ```/etc/ansible/hosts``` file by appending the connection information of the remote systems to be managed.
 
 - Along with the hands-on, public or private IPs can be used.
 
-```txt
-[servers]
-db_server   ansible_host=<YOUR-DB-SERVER-IP>   ansible_user=ec2-user  ansible_ssh_private_key_file=~/<YOUR-PEM-FILE>
-web_server  ansible_host=<YOUR-WEB-SERVER-IP>  ansible_user=ec2-user  ansible_ssh_private_key_file=~/<YOUR-PEM-FILE>
+```bash
+$ sudo su
+$ cd /etc/ansible
+$ ls
+$ vim hosts
+[webservers]
+node1 ansible_host=<node1_ip> ansible_user=ec2-user
+
+[]
+node2 ansible_host=<node2_ip> ansible_user=ec2-user
+
+[all:vars]
+ansible_ssh_private_key_file=/home/ec2-user/<pem file>
 ```
 
-- Create a file named ```ping-playbook.yml``` and paste the content below.
+- Explain what ```ansible_host```, ```ansible_user``` and ansible_ssh_key_file parameters are. For this reason visit the Ansible's [inventory parameters web site](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters).
+
+- Explain what an ```alias``` (node1 and node2) is and where we use it.
+
+- Explain what ```[webservers] and [all:vars]``` expressions are. Elaborate the concepts of [group name](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#inventory-basics-formats-hosts-and-groups), [group variables](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#assigning-a-variable-to-many-machines-group-variables) and [default groups](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#default-groups). 
+
+- Visit the above links for helping to understand the subject. 
+
+- Copy your pem file to the /etc/ansible/ directory. First, go to your pem file directory on your local PC and run the following command.
 
 ```bash
-$ touch ping-playbook.yml
+$ scp -i <pem file> <pem file> ec2-user@<public DNS name of Control Node>:/home/ec2-user
 ```
+- Check if the file is transferred to the remote machine. 
 
-```yml
-- name: ping them all
-  hosts: all
-  tasks:
-    - name: pinging
-      ping:
-```
+- As an alternative way, create a file on the control node with the same name as the <pem file> in ```/etc/ansible``` directory. 
+
+- Then copy the content of the pem file and paste it in the newly created pem file on the control node.
 
 
-- Create another file named ```ansible.cfg``` in the project directory.
 
-```
-[defaults]
-host_key_checking = False
-inventory=inventory.txt
-
-```
-
-- run the playbook
-
-```bash
-$ ansible-playbook ping-playbook.yml
-```
-
-
-## Part 4 - Ansible Facts
+## Part 2 - Ansible Facts
 
 - Gathering Facts
 
@@ -217,9 +163,9 @@ $ ansible-playbook facts.yml
 ansible-playbook ipaddress.yml -i inventory.aws_ec2.yml 
 ```
 
-## Part 5 - working with sensitive data
+## Part 3 - Working with sensitive data
 
-- create encypted variables using "ansible-vault" command
+- Create encypted variables using "ansible-vault" command
 
 ```bash
 ansible-vault create secret.yml
@@ -275,7 +221,7 @@ ansible-playbook create-user.yml
 ```bash
 ERROR! Attempting to decrypt but no vault secrets found
 ```
-- run the playbook like this:
+- Run the playbook with "--ask-vault-pass" command:
 
 ```bash
 $ ansible-playbook --ask-vault-pass create-user.yml
@@ -288,7 +234,7 @@ node1                      : ok=2    changed=1    unreachable=0    failed=0    s
 node2                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 ```
 
-- to verrify it
+- To verrify it
 
 ```bash
 ansible all -b -m command -a "grep tyler /etc/shadow"
@@ -297,17 +243,75 @@ ansible all -b -m command -a "grep tyler /etc/shadow"
 node1 | CHANGED | rc=0 >>
 tyler:99abcd:18569:0:99999:7:::
 ```
-- create create-user1.yml
+
+- Create another encypted variables using "ansible-vault" command but this time use SHA (Secure Hash Algorithm) for your password:
+
+```bash
+ansible-vault create secret-1.yml
+```
+
+New Vault password: xxxx
+Confirm Nev Vault password: xxxx
+
+```yml
+username: Oliver
+pwhash: 14abcd
+```
+
+- look at the content
+
+```bash
+$ cat secret-1.yml
+```
+```
+33663233353162643530353634323061613431366332373334373066353263353864643630656338
+6165373734333563393162333762386132333665353863610a303130346362343038646139613632
+62633438623265656330326435646366363137373333613463313138333765366466663934646436
+3833386437376337650a636339313535323264626365303031366534363039383935333133306264
+61303433636266636331633734626336643466643735623135633361656131316463
+```
+- how to use it:
+
+- create a file named "create-user-1"
+
+```bash
+$ vi create-user-1.yml
+
+```
 
 ```yml
 - name: create a user
   hosts: all
   become: true
   vars_files:
-    - secret1.yml
+    - secret-1.yml
   tasks:
     - name: creating user
       user:
         name: "{{ username }}"
         password: "{{ pwhash | password_hash ('sha512') }}"
+```
+
+- run the plaaybook
+
+
+```bash
+$ ansible-playbook --ask-vault-pass create-user-1.yml
+```
+Vault password: xxxx
+
+```
+PLAY RECAP ******************************************************************************************
+node1                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+node2                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
+
+- to verrify it:
+
+```bash
+ansible all -b -m command -a "grep tyler /etc/shadow"
+```
+```
+node1 | CHANGED | rc=0 >>
+tyler:#665fffgkg6&fkg689##2£6466?%^^+&%+:18569:0:99999:7:::
 ```
