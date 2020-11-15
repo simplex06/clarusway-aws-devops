@@ -233,7 +233,7 @@ INSERT INTO products (Name,Price,ImageUrl) VALUES ("Laptop","100","c-1.png"),("D
 ```yml
     - name: copy the sql script
       copy:
-        src: ~/db-load-script.sql
+        src: ~/Ansible-Website-Project/db-load-script.sql
         dest: ~/
 ```
 
