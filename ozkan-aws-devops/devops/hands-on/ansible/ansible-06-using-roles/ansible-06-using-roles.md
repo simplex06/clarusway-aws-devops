@@ -161,13 +161,13 @@ vi role1.yml
 
 ## Part 3 - Using Ansible Roles from Ansible Galaxy
 
-- Go to Ansible Galaxy web site (www.galaxy.ansible.com)
+- Go to Ansible Galaxy web site (https://galaxy.ansible.com/)
 
 - Click the Search option
 
 - Write nginx
 
-- Explane the difference beetween collections and roles
+- Explain the difference beetween collections and roles
 
 - Evaluate the results (stars, number of download, etc.)
 
@@ -228,7 +228,7 @@ Stdout:
 
 - Inspect the role:
 
-$ cd /home/ec2-user/.ansible/roles/geerlingguy.nginx
+$ cd /home/ec2-user/ansible/roles/geerlingguy.nginx
 
 $ ls
 defaults  handlers  LICENSE  meta  molecule  README.md  tasks  templates  vars

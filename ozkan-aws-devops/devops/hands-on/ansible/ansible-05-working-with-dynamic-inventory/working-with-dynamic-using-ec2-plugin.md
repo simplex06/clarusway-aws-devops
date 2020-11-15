@@ -197,7 +197,7 @@ compose:
 - see the inventory
 
 ```bash
-$ ansible-inventory -i inventory_aws_ec2.yml --graph
+$ ansible-inventory -i inventory_aws_ec2.yml --graph    #run boto3 without sudo
 ```
 
 ```
@@ -211,7 +211,8 @@ $ ansible-inventory -i inventory_aws_ec2.yml --graph
 - To make sure that all our hosts are reachable with dynamic inventory, we will run various ad-hoc commands that use the ping module.
 
 ```bash
-$ ansible all -m ping --key-file "~/mykey.pem"
+$ ansible all -m ping --key-file "~/mykey.pem" #ansible.cfg dosyasinda inventory=inventory_aws_ec2.yml yazdiktan sonra bu komut calistirilabilir. yazilmazsa asagidakini kullanmaliyiz.
+$ ansible all -m ping --key-file "~/key.pem" -i inventory_aws_ec2.yml   
 ```
 
 - create a playbook name "user.yml"
