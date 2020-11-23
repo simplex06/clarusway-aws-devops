@@ -175,7 +175,7 @@ sudo yum install git -y
 
 - For `Build`, select `Invoke top-level Maven targets`
 
-  - For `Maven Versin`, select the pre-defined maven, `maven-3.6.3` 
+  - For `Maven Version`, select the pre-defined maven, `maven-3.6.3` 
   - For `Goals`, write `clean package`
   - POM: `pom.xml`
 
@@ -387,7 +387,7 @@ sudo yum install git -y
 
   - for `DSL Scripts`, enter `MavenProjectDSL.groovy`
   
-- Now click the  `Build Now` option, it will fail. Chect the console log for the fail reason.
+- Now click the  `Build Now` option, it will fail. Check the console log for the fail reason.
 
 - Go to `Manage Jenkins` ,  select the `In-process Script Approval`, `approve` the script.
   
@@ -397,7 +397,7 @@ sudo yum install git -y
 
 - Go to the `First-Maven-Project-Via-DSL` job.
 
-- Select `Configure`, at `Buld` section set `Maven Version` to a defined/valid one.
+- Select `Configure`, at `Build` section set `Maven Version` to a defined/valid one.
 
 - `Save` and click the `Build Now` option.
 

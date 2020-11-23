@@ -314,7 +314,7 @@ nginx-server   NodePort    10.110.144.60   <none>        80:32276/TCP   113s   r
 - Clean the service and pod from the cluster.
 
 ```bash
-kubectl delete svc nginx-server
+kubectl delete service nginx-server
 kubectl delete pods nginx-server
 ```
 
