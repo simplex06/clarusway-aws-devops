@@ -1,4 +1,4 @@
-Project-202: Jenkins Pipeline for Dockerized Phonebook Application (Python Flask & MySQL) Deployed on Docker Swarm
+#Project-202: Jenkins Pipeline for Dockerized Phonebook Application (Python Flask & MySQL) Deployed on Docker Swarm
 
 - Infrastructure
     - Public repository on Github 
@@ -7,9 +7,9 @@ Project-202: Jenkins Pipeline for Dockerized Phonebook Application (Python Flask
         - 2 workers
     - Image repository (AWS ECR)
     - Should be able to
-        - Every EC2 is abe to talk eache other (EC2 Connect CLI, IAM policy)
+        - Every EC2 is able to talk each other (EC2 Connect CLI, IAM policy)
         - Grand master can pull and push image to AWS ECR
-        - MAnagers and workers can pull image from AWS ECR
+        - Managers and workers can pull image from AWS ECR
 
 - Application Deployment
     - Dockerfile
