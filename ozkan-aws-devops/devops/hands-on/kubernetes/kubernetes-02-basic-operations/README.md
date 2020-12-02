@@ -325,7 +325,7 @@ mkdir deployment-lesson
 cd deployment-lesson
 ```
 
-- Create a clarus-deploy.yaml and input text below. Pay attention that image version is 1.0.
+- Create a `clarus-deploy.yaml` and input text below. Pay attention that image version is 1.0.
 
 ```yaml
 apiVersion: apps/v1
