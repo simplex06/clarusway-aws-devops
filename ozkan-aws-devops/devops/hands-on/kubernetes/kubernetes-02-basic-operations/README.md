@@ -33,7 +33,7 @@ At the end of the this hands-on training, students will be able to;
 
 ```bash
 kubectl cluster-info
-kubectl get no
+kubectl get node
 ```
 
 ## Part 2 - Basic Operations in Kubernetes
@@ -325,7 +325,7 @@ mkdir deployment-lesson
 cd deployment-lesson
 ```
 
-- Create a `clarus-deploy.yaml` and input text below. Pay attention that image version is 1.0.
+- Create a clarus-deploy.yaml and input text below. Pay attention that image version is 1.0.
 
 ```yaml
 apiVersion: apps/v1
