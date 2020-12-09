@@ -43,7 +43,7 @@ $ kubectl create namespace prometheus
 - Create yaml file named **ClusterRole.yml** and explain fields of it.
 
 ```yaml
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: prometheus
@@ -64,7 +64,7 @@ rules:
 - nonResourceURLs: ["/metrics"]
   verbs: ["get"]
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: prometheus
@@ -267,7 +267,7 @@ spec:
     spec:
       containers:
         - name: prometheus
-          image: prom/prometheus:v2.6.1
+          image: prom/prometheus:latest
           args:
             - "--config.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.path=/prometheus/"
@@ -293,7 +293,7 @@ spec:
 ```bash
 $ kubectl create -f PrometheusDeployment.yml -n prometheus
 
-deployment.extensions/prometheus-deployment created
+deployment.apps/prometheus-deployment created
 ```
 
 - Validate that Prometheus is running.
@@ -309,16 +309,6 @@ prometheus-deployment-78fb5694b4-lmz4r   1/1     Running   0          15s
 
 - In this section, we'll access the Prometheus UI and review the metrics being collected.
 
-- Use port forwarding to enable web access to the Prometheus UI.
->### Note
->Your prometheus-deployment will have a different name than this example. Review and replace the name of the pod from the output of the previous command.
-
-```bash
-$ kubectl port-forward prometheus-deployment-78fb5694b4-lmz4r 8080:9090 -n prometheus
-
-Forwarding from 127.0.0.1:8080 -> 9090
-Forwarding from [::1]:8080 -> 9090
-```
 >### Note
 >Now Prometheus runs locally. To view the metrics via web browser we need to expose the pod publicly. 
 
@@ -329,6 +319,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: web-prometheus-server
+  namespace: prometheus
   labels:
     app: prometheus-server
 spec:
@@ -340,6 +331,7 @@ spec:
     port: 90
     targetPort: 9090
     protocol: TCP
+    nodePort: 32000
 ```
 
 - Apply ServiceNodePort.yml file to Prometheus namespace.
@@ -354,15 +346,15 @@ $ kubectl apply -f ServiceNodePort.yml -n prometheus
 $ kubectl get svc -n prometheus
 
 NAME                    TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
-web-prometheus-server   NodePort   10.106.87.104   <none>        90:32466/TCP   28s
+web-prometheus-server   NodePort   10.106.87.104   <none>        90:32000/TCP   28s
 ```
 
-- Edit EC2 Master Node's security group and allow the port that the metrics are exposed (32466 in the above example output) in the inbound rules section.
+- Edit EC2 Master Node's security group and allow the port that the metrics are exposed (32000 in the above example output) in the inbound rules section.
 
-- Open web browser and go to **http://ec2-54-89-159-197.compute-1.amazonaws.com:32466/**
+- Open web browser and go to **http://ec2-54-89-159-197.compute-1.amazonaws.com:32000/**
 
 >### Note
->Replace the address with your EC2 Master Node's public IP address and change the port to the port  your metrics are exposed from.
+>Replace the address with your EC2 Master Node's public IP address.
 
 
 ## Part 4 - Creating a monitoring dashboard with Grafana
