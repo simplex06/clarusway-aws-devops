@@ -905,7 +905,7 @@ resource "aws_dynamodb_table" "tf-remote-state_lock" {
 }
 ```
 
-- Run the commands belov.
+- Run the commands below.
 
 ```bash
 terraform init
