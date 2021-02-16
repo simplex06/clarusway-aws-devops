@@ -12,7 +12,11 @@ At the end of this hands-on training, students will be able to;
 
 - Part 1 - Install Ansible
 
-- Part 2 - Using Ansible Roles
+- Part 2 - Using Ansible Roles 
+
+- Part 3 - Using Ansible Roles from Ansible Galaxy
+
+
 
 ## Part 1 - Install Ansible
 
@@ -25,75 +29,143 @@ At the end of this hands-on training, students will be able to;
 
 - Connect to the control node via SSH and run the following commands.
 
+- Run the commands below to install Python3 and Ansible. 
+
 ```bash
-sudo yum update -y
-sudo amazon-linux-extras install ansible2
+$ sudo yum install -y python3 
 ```
 
-### Confirm Installation
+```bash
+$ pip3 install --user ansible
+```
 
-- To confirm the successful installation of Ansible, run the following command.
+- Check Ansible's installation with the command below.
 
 ```bash
 $ ansible --version
 ```
-Stdout:
-```
-ansible 2.9.12
-  config file = /etc/ansible/ansible.cfg
-  configured module search path = [u'/home/ec2-user/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
-  ansible python module location = /usr/lib/python2.7/site-packages/ansible
-  executable location = /usr/bin/ansible
-  python version = 2.7.18 (default, Aug 27 2020, 21:22:52) [GCC 7.3.1 20180712 (Red Hat 7.3.1-9)]
+
+
+- Run the command below to transfer your pem key to your Ansible Controller Node.
+
+```bash
+$ scp -i <PATH-TO-PEM-FILE> <PATH-TO-PEM-FILE> ec2-user@<CONTROLLER-NODE-IP>:/home/ec2-user
 ```
 
-### Configure Ansible on the Control Node
 
-- Connect to the control node for building a basic inventory.
+- Make a directory named ```working-with-roles``` under the home directory and cd into it.
 
-- Edit ```/etc/ansible/hosts``` file by appending the connection information of the remote systems to be managed.
+```bash 
+$ mkdir working-with-roles
+$ cd working-with-roles
+```
+
+- Create a file named ```inventory.txt``` with the command below.
+
+```bash
+$ vi inventory.txt
+```
+
+- Paste the content below into the inventory.txt file.
 
 - Along with the hands-on, public or private IPs can be used.
 
-```bash
-$ sudo su
-$ cd /etc/ansible
-$ ls
-$ vim hosts
-[webservers]
-node1 ansible_host=<node1_ip> ansible_user=ec2-user
-node2 ansible_host=<node2_ip> ansible_user=ec2-user
+```txt
+[servers]
+db_server   ansible_host=<YOUR-DB-SERVER-IP>   ansible_user=ec2-user  ansible_ssh_private_key_file=~/<YOUR-PEM-FILE>
+web_server  ansible_host=<YOUR-WEB-SERVER-IP>  ansible_user=ec2-user  ansible_ssh_private_key_file=~/<YOUR-PEM-FILE>
+test_server  ansible_host=<YOUR-WEB-SERVER-IP>  ansible_user=ec2-user  ansible_ssh_private_key_file=~/<YOUR-PEM-FILE>
+```
+- Create file named ```ansible.cfg``` under the the ```working-with-roles``` directory.
 
-[all:vars]
-ansible_ssh_private_key_file=/home/ec2-user/<pem file>
+```cfg
+[defaults]
+host_key_checking = False
+inventory=inventory.txt
+interpreter_python=auto_silent
 ```
 
 
-- Copy your pem file to the /etc/ansible/ directory. First, go to your pem file directory on your local PC and run the following command.
+- Create a file named ```ping-playbook.yml``` and paste the content below.
 
 ```bash
-$ scp -i <pem file> <pem file> ec2-user@<public DNS name of Control Node>:/home/ec2-user
+$ touch ping-playbook.yml
 ```
-- Check if the file is transferred to the remote machine. 
 
-- As an alternative way, create a file on the control node with the same name as the <pem file> in ```/etc/ansible``` directory. 
+```yml
+- name: ping them all
+  hosts: all
+  tasks:
+    - name: pinging
+      ping:
+```
 
-- Then copy the content of the pem file and paste it in the newly created pem file on the control node.
-
+- Run the command below for pinging the servers.
 
 ```bash
-$ ansible all -m ping
-
+$ ansible-playbook ping-playbook.yml
 ```
+
+- Explain the output of the above command.
+
 
 
 ## Part 2 - Using Ansible Roles
+
+- Install ngnix server and restart it with using Ansible roles.
+
+ansible-galaxy init /home/ec2-user/ansible/roles/apache
+
+
+cd /home/ec2-user/ansible/roles/apache
+ll
+sudo yum install tree
+tree
+
+- Create tasks/main.yml with the following.
+
+vi tasks/main.yml
+
+```yml
+- name: installing apache
+  yum:
+    name: httpd
+    state: latest
+
+- name: index.html
+  copy:
+    content: "<h1>Hello Clarusway</h1>"
+    dest: /var/www/html/index.html
+
+- name: restart apache2
+  service:
+    name: httpd
+    state: restarted
+    enabled: yes
+```
+
+- Create a playbook named "role1.yml".
+
+cd /home/ec2-user/working-with-roles/
+vi role1.yml
+
+
+---
+- name: Install and Start apache
+  hosts: _test_server
+  become: yes
+  roles:
+    - apache
+```
+
+
+## Part 3 - Using Ansible Roles from Ansible Galaxy
 
 - Go to Ansible Galaxy web site (www.galaxy.ansible.com)
 
 - Click the Search option
 
-- Write ngnx
+- Write nginx
 
 - Explane the difference beetween collections and roles
 
@@ -223,6 +295,8 @@ $ vi main.yml
   hosts: all
   user: ec2-user
   become: true
+  vars:
+    ansible_ssh_private_key_file: "/home/ec2-user/mykey.pem"
 
   roles:
     - role: geerlingguy.nginx
@@ -255,72 +329,5 @@ GALAXY_ROLE_SKELETON_IGNORE(default) = ['^.git$', '^.*/.git_keep$']
 
 
 
-- Install Apache server and restart it with using Ansible roles.
 
-```bash
-ansible-galaxy init /etc/ansible/roles/apache
-cd roles/apache
-ll
-yum install tree
-tree apache/
-```
-
-- Create tasks/main.yml with the following.
-
-```bash
-vi tasks/main.yml
-```
-
-```bash
----
-# tasks file for /etc/ansible/roles/apache
-- name: installing apache
-  apt:
-    name: apache2
-    state: latest
-
-- name: index.html
-  copy:
-    content: "<h1>Hello Clarusway</h1>"
-    dest: /var/www/html/index.html
-
-- name: restart apache2
-  service:
-    name: apache2
-    state: restarted
-    enabled: yes
-```
-
-- Create handlers/main.yml with the following.
-
-```bash
-vi handlers/main.yml
-```
-
-```bash
----
-# handlers file for /etc/ansible/roles/apache
-- name: restart apache
-  service: name=apache2 state=restarted
-```
-
-- Create playbook7.yml.
-
-```bash
-cd /etc/ansible
-vi playbook7.yml
-```
-
-```bash
----
-- name: Install and Start Apache
-  hosts: ubuntuservers
-  roles:
-    - apache
-```
-- Run the playbook7.yml
-
-```bash
-ansible-playbook -b playbook7.yml
-```
 
